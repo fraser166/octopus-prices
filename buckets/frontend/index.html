@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Energy Prices</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-trendline"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row" style="text-align: center;">
+        <div class="col">
+            <div class="row mt-2">
+                <h2>Electricity</h2>
+                <div class="col-sm-6 mt-2">
+                    <div class="card">
+                        <div class="card-header">
+                            Electricity Today
+                        </div>
+                        <div class="card-body p-2">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <div class="row g-0" id="ERATE-Today">
+                                        <div class="col" style="text-align: left"><span id="ERATE-Today-Price"><div class='spinner-border spinner-border-sm' role='status'><span class='visually-hidden'>Loading...</span></div></span>/kWh</div>
+                                        <div class="col" style="text-align: right"><span id="ERATE-Today-Change"></span></div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row g-0" id="ESTAND-Today">
+                                        <div class="col" style="text-align: left"><span id="ESTAND-Today-Price"><div class='spinner-border spinner-border-sm' role='status'><span class='visually-hidden'>Loading...</span></div></span>/day</div>
+                                        <div class="col" style="text-align: right"><span id="ESTAND-Today-Change"></span></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 mt-2">
+                    <div class="card">
+                        <div class="card-header">
+                            Electricity Tomorrow
+                        </div>
+                        <div class="card-body p-2">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <div class="row g-0" id="ERATE-Tomorrow">
+                                        <div class="col" style="text-align: left"><span id="ERATE-Tomorrow-Price"><div class='spinner-border spinner-border-sm' role='status'><span class='visually-hidden'>Loading...</span></div></span>/kWh</div>
+                                        <div class="col" style="text-align: right"><span id="ERATE-Tomorrow-Change"></span></div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row g-0" id="ESTAND-Tomorrow">
+                                        <div class="col" style="text-align: left"><span id="ESTAND-Tomorrow-Price"><div class='spinner-border spinner-border-sm' role='status'><span class='visually-hidden'>Loading...</span></div></span>/day</div>
+                                        <div class="col" style="text-align: right"><span id="ESTAND-Tomorrow-Change"></span></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-3">
+                <div>
+                    <h4>Unit Rate</h4>
+                    <canvas id="EUnitChart"></canvas>
+                </div>
+            </div>
+            <div class="row m-3">
+                <div>
+                    <h4>Standing Charge</h4>
+                    <canvas id="EStandChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row mt-2">
+                <h2>Gas</h2>
+                <div class="col-sm-6 mt-2">
+                    <div class="card">
+                        <div class="card-header">
+                            Gas Today
+                        </div>
+                        <div class="card-body p-2">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <div class="row g-0" id="GRATE-Today">
+                                        <div class="col" style="text-align: left"><span id="GRATE-Today-Price"><div class='spinner-border spinner-border-sm' role='status'><span class='visually-hidden'>Loading...</span></div></span>/kWh</div>
+                                        <div class="col" style="text-align: right"><span id="GRATE-Today-Change"></span></div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row g-0" id="GSTAND-Today">
+                                        <div class="col" style="text-align: left"><span id="GSTAND-Today-Price"><div class='spinner-border spinner-border-sm' role='status'><span class='visually-hidden'>Loading...</span></div></span>/day</div>
+                                        <div class="col" style="text-align: right"><span id="GSTAND-Today-Change"></span></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 mt-2">
+                    <div class="card">
+                        <div class="card-header">
+                            Gas Tomorrow
+                        </div>
+                        <div class="card-body p-2">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <div class="row g-0" id="GRATE-Tomorrow">
+                                        <div class="col" style="text-align: left"><span id="GRATE-Tomorrow-Price"><div class='spinner-border spinner-border-sm' role='status'><span class='visually-hidden'>Loading...</span></div></span>/kWh</div>
+                                        <div class="col" style="text-align: right"><span id="GRATE-Tomorrow-Change"></span></div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row g-0" id="GSTAND-Tomorrow">
+                                        <div class="col" style="text-align: left"><span id="GSTAND-Tomorrow-Price"><div class='spinner-border spinner-border-sm' role='status'><span class='visually-hidden'>Loading...</span></div></span>/day</div>
+                                        <div class="col" style="text-align: right"><span id="GSTAND-Tomorrow-Change"></span></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row m-3">
+                <div>
+                    <h4>Unit Rate</h4>
+                    <canvas id="GUnitChart"></canvas>
+                </div>
+            </div>
+            <div class="row m-3">
+                <div>
+                    <h4>Standing Charge</h4>
+                    <canvas id="GStandChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+	var graphs = {
+        "ERATE":{
+            trackerData: [],
+            flexData: [],
+            fixData: [],
+            chart: document.getElementById('EUnitChart')
+        },
+        "GRATE":{
+            trackerData: [],
+            flexData: [],
+            fixData: [],
+            chart: document.getElementById('GUnitChart')
+        },
+        "ESTAND":{
+            trackerData: [],
+            flexData: [],
+            fixData: [],
+            chart: document.getElementById('EStandChart')
+        },
+        "GSTAND":{
+            trackerData: [],
+            flexData: [],
+            fixData: [],
+            chart: document.getElementById('GStandChart')
+        }
+    }
+	
+    chartConfig = {
+        type: 'line',
+        indexAxis: 'x',
+        options: {
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day'
+                    },
+                    min: new Date(new Date().setDate(new Date().getDate() - 84)).toISOString().split('T')[0],
+					max: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString().split('T')[0],
+                },
+            },
+        }
+    }
+
+    function getData() {
+        Promise.all(Object.keys(graphs).map((endpoint) =>
+            axios.get(`https://6tgo0au3m6.execute-api.eu-west-2.amazonaws.com/prod/latest/${endpoint}`).then(data => ({ item: data, endpoint: endpoint }))
+        ))
+            .then( function (results){
+                console.log(results)
+                results.forEach(({ item, endpoint }) => {
+                    const graph = graphs[endpoint];
+                    graph.trackerData = (endpoint === "ERATE" || endpoint === "GRATE") ? createTrackerPoints(item.data["tracker"]) : createPoints(item.data["tracker"]);
+                    graph.flexData = createPoints(item.data["flex"])
+                    // graph.fixData = createPoints(item.data["fixed"])
+                    graph.capData = createPoints(item.data["cap"])
+
+                    updateTodayTomorrowRates(endpoint, graph.trackerData);
+                });
+                drawCharts();
+            }
+        );
+
+    }
+
+    function updateTodayTomorrowRates(endpoint, data) {
+        const today = new Date().toISOString().split('T')[0];
+        const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+
+        const todayData = data.find(d => d.x.startsWith(today));
+        const tomorrowData = data.find(d => d.x.startsWith(tomorrow));
+
+        const todayRate = todayData ? todayData.y : null;
+        const tomorrowRate = tomorrowData ? tomorrowData.y : null;
+        const yesterdayData = data.find(d => d.x === new Date(new Date().setDate(new Date().getDate() - 1)).toISOString().split('T')[0]);
+        const yesterdayRate = yesterdayData ? yesterdayData.y : null;
+
+        const todayChange = calculateChange(yesterdayRate, todayRate);
+        const tomorrowChange = calculateChange(todayRate, tomorrowRate);
+
+        setRates(endpoint, 'Today', todayRate);
+        setRates(endpoint, 'Tomorrow', tomorrowRate);
+        setChange(endpoint, 'Today-Change', todayChange);
+        setChange(endpoint, 'Tomorrow-Change', tomorrowChange);
+    }
+
+    function calculateChange(previous, current) {
+        if (!previous || !current) return null;
+        return ((current - previous) / previous) * 100;
+    }
+
+    function setRates(a, b, data){
+        data ? $('#'+a+'-'+b+'-Price').text(data + 'p ') : $('#'+a+'-'+b).html("<div style='color: dimgray'>Price not available yet</div>")
+    }
+
+    function setChange(a, b, data){
+        if (!data) return;
+        const p = Math.round(data * 100) / 100;
+
+        $('#'+a+'-'+b).removeClass('badge bg-danger bg-success bg-secondary');
+        if(p > 0){
+            $('#'+a+'-'+b).addClass('badge bg-danger').html('&#9650; ' + p + '%');
+        }
+        else if(p < 0){
+            $('#'+a+'-'+b).addClass('badge bg-success').html('&#9660; ' + Math.abs(p) + '%');
+        }
+        else {
+            $('#'+a+'-'+b).addClass('badge bg-secondary').html(p + '%');
+        }
+    }
+
+    function createPoints(data){
+        const output = [];
+
+        data.forEach((item, index) => {
+            output.push({ x: item.start, y: item.cost });
+
+            let endDate = item.end;
+            if (endDate === null) {
+                if (index + 1 < data.length) {
+                    endDate = new Date(new Date(data[index + 1].start).setDate(new Date(data[index + 1].start).getDate() - 1)).toISOString().split('T')[0];
+                } else {
+                    endDate = new Date().toISOString().split('T')[0];
+                }
+            }
+
+            output.push({ x: endDate, y: item.cost });
+        });
+
+        return output;
+    }
+
+    function createTrackerPoints(data){
+        return data.map((item) => {
+            return { x: item.start, y: item.cost }
+        });
+    }
+
+    function drawCharts(){
+        for (const graph in graphs){
+            new Chart(graphs[graph].chart, {
+                ...chartConfig,
+                data: {
+                    datasets: [
+                        {
+                            label: 'Tracker',
+                            data: graphs[graph].trackerData,
+                            borderWidth: 1,
+                            trendlineLinear: {
+                                colorMin: "green",
+                                colorMax: "green",
+                                lineStyle: "dotted",
+                                width: 2,
+                                projection: false
+                            },
+							backgroundColor: '#3366CC',
+							borderColor: '#3366CC',
+                        },
+                        {
+                            label: 'Fixed 12M July 23',
+                            data: graphs[graph].fixData,
+                            borderWidth: 1,
+							backgroundColor: '#DC3912',
+							borderColor: '#DC3912',
+                        },
+                        {
+                            label: 'Variable',
+                            data: graphs[graph].flexData,
+                            borderWidth: 1,
+							backgroundColor: '#FF9900',
+							borderColor: '#FF9900',
+                        },
+						{
+                            label: 'PriceCap',
+                            data: graphs[graph].capData,
+                            borderWidth: 1,
+							backgroundColor: '#990099',
+							borderColor: '#990099',
+                        },
+                    ]
+                }
+            });
+        }
+
+
+    }
+
+    getData();
+</script>
+</body>
+</html>
